@@ -1,0 +1,33 @@
+version: '3'
+
+networks:
+  server:
+  data:
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.18 # stable version
+    networks:
+      - server
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/:/etc/nginx/conf.d/
+#      - ./nginx/ssl/:/ssl/
+      - ./:/var/www/html/web/
+    restart: always
+
+  php:
+    container_name: php
+    build: ./docker/
+    expose:
+      - 9000
+    networks:
+      - server
+      - data
+    volumes:
+      - ./:/var/www/html/web/
+      - ./docker/mysql/docker-php-ext-mysql.ini:/usr/local/etc/php/conf.d/docker-php-ext-mysql.ini
+    restart: always
